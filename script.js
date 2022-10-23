@@ -1,12 +1,12 @@
 window.addEventListener("load", function(){
     const canvas = document.getElementById("canvas1");
     const ctx = canvas.getContext("2d");
-    canvas.width = 800;
+    canvas.width = 1400;
     canvas.height = 720;
 
     let enemies = [];
     let score = 0;
-    let gameOver = false
+    let gameOver = false;
 
     class InputHandler {
         constructor(){
@@ -14,8 +14,7 @@ window.addEventListener("load", function(){
             window.addEventListener("keydown", (e) => {
               if ( (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "ArrowLeft" || e.key === "ArrowRight") && this.keys.indexOf(e.key) === -1){
                         this.keys.push(e.key);
-                }
-                console.log(e.key, this.keys);
+                } else if (e.key === "Enter" && gameOver) restartGame();
             });
             window.addEventListener("keyup", e => {
                 if (
@@ -25,7 +24,6 @@ window.addEventListener("load", function(){
                     e.key === "ArrowRight")) {
                   this.keys.splice(this.keys.indexOf(e.key), 1);
                 }
-                console.log(e.key, this.keys)
             })
         }
     }
@@ -36,7 +34,7 @@ window.addEventListener("load", function(){
             this.gameHeight = gameHeight;
             this.width = 200;
             this.height = 200;
-            this.x = 0;
+            this.x = 100;
             this.y = this.gameHeight - this.height;
             this.image = document.getElementById("playerImage");
             this.frameX = 0;
@@ -48,6 +46,12 @@ window.addEventListener("load", function(){
             this.speed = 0;
             this.vy = 0;
             this.weight = 1;
+        }
+        restart(){
+            this.x = 100;
+            this.y = this.gameHeight - this.height;
+            this.maxFrame = 8;
+            this.frameY = 0;
         }
         draw(context){
             context.drawImage(this.image, this.frameX * this.width, this.frameY * this.height, this.width, this.height, this.x, this.y, this.width, this.height);
@@ -122,6 +126,9 @@ window.addEventListener("load", function(){
             this.x -= this.speed;
             if (this.x < 0 - this.width) this.x = 0;
         }
+        restart(){
+            this.x = 0;
+        }
     }
     class Enemy {
         constructor(gameWidth, gameHeight){
@@ -176,6 +183,7 @@ window.addEventListener("load", function(){
     }
 
     function displayStatusText(context){
+        context.textAlign = "left";
         context.font = "40px Helvetica";
         context.fillStyle = "black";
         context.fillText("Score: " + score, 20, 50);
@@ -184,10 +192,19 @@ window.addEventListener("load", function(){
         if (gameOver) {
             context.textAlign = "center";
             context.fillStyle = "black";
-            context.fillText("GAME OVER, try again!",canvas.width/2, 200);
+            context.fillText("GAME OVER, press Enter to restart!",canvas.width/2, 200);
             context.fillStyle = "white";
-            context.fillText("GAME OVER, try again!", canvas.width / 2 + 2, 202);
+            context.fillText("GAME OVER, press Enter to restart!", canvas.width / 2 + 2, 202);
         }
+    }
+
+    function restartGame(){
+        player.restart();
+        background.restart();
+        enemies = [];
+        score = 0;
+        gameOver = false;
+        animate(0);
     }
 
     const input = new InputHandler();
