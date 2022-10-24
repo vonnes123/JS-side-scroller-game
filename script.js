@@ -3,10 +3,10 @@ window.addEventListener("load", function(){
     const ctx = canvas.getContext("2d");
     canvas.width = 1400;
     canvas.height = 720;
-
     let enemies = [];
     let score = 0;
     let gameOver = false;
+    const fullScreenButton = document.getElementById("fullScreenButton");
 
     class InputHandler {
         constructor(){
@@ -97,7 +97,7 @@ window.addEventListener("load", function(){
                 this.speed = 5;
             } else if (input.keys.indexOf("ArrowLeft") > -1){
                 this.speed = -5;
-            } else if (input.keys.indexOf("ArrowUp") > -1 || input.keys.indexOf("swipe up") > -1 && this.onGround()) {
+            } else if ((input.keys.indexOf("ArrowUp") > -1 || input.keys.indexOf("swipe up") > -1 )&& this.onGround()) {
                 this.vy -= 32;
             } else {
               this.speed = 0;
@@ -223,6 +223,18 @@ window.addEventListener("load", function(){
         gameOver = false;
         animate(0);
     }
+
+    function toggleFullScreen(){
+        console.log(document.fullscreenElement);
+        if (!document.fullscreenElement) {
+            canvas.requestFullscreen().catch(err => {
+                alert(`Error, can't enable full-screen mode: ${err.meesage}`)
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    }
+    fullScreenButton.addEventListener("click", toggleFullScreen);
 
     const input = new InputHandler();
     const player = new Player(canvas.width, canvas.height);
